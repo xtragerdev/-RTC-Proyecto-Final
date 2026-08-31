@@ -1,0 +1,21 @@
+{
+  "dataset": "ReNodo",
+  "version": 1,
+  "deterministicSeed": 260831,
+  "asOf": "2026-08-31T12:00:00.000Z",
+  "syntheticData": true,
+  "counts": {
+    "users": 60,
+    "hubs": 12,
+    "items": 180,
+    "reservations": 260,
+    "total": 512
+  },
+  "files": {
+    "csv/users.csv": "b159aa541cca12a275edd9be9364ee2ac40dd2f8b551007221e288dfd6456c6e",
+    "csv/hubs.csv": "7ea179a96e29a8bdab52d31311659a1354de926ca5bf249a6e0d7bbba40a6e0d",
+    "csv/items.csv": "cb3acb17fa772d51f3dddc5fb291ce78839fbc37b30ed4271da6f7595d2f443e",
+    "csv/reservations.csv": "41fac9b44312d5ddf253a41b8b35dec48e813a8da6ef4ff8630668cc9ca0e230",
+    "ReNodo-dataset.xlsx": "27795f70dc86545ba402448af25e87cb365669c42f07160d9686f46cef62392d"
+  }
+}

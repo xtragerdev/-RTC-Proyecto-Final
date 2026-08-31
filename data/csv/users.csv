@@ -1,0 +1,61 @@
+external_code,first_name,last_name,email,role,district,preferred_hub_code,is_active,created_at
+USR-0001,Sergio,Molina Cano,sergio-molina.0001@renodo.example,admin,Centro,HUB-MAD-001,false,2024-09-01T10:00:00.000Z
+USR-0002,Iker,Navarro Gil,iker-navarro.0002@renodo.example,admin,Centro,HUB-MAD-002,true,2024-09-12T10:00:00.000Z
+USR-0003,Elena,Ortega Soler,elena-ortega.0003@renodo.example,manager,Arganzuela,HUB-MAD-003,true,2024-09-23T10:00:00.000Z
+USR-0004,Nora,Navarro Gil,nora-navarro.0004@renodo.example,manager,Chamberí,HUB-MAD-004,true,2024-10-04T10:00:00.000Z
+USR-0005,Bruno,Prieto Luna,bruno-prieto.0005@renodo.example,manager,Tetuán,HUB-MAD-005,true,2024-10-15T10:00:00.000Z
+USR-0006,Leo,López Ruiz,leo-lopez.0006@renodo.example,manager,Carabanchel,HUB-MAD-006,true,2024-10-26T10:00:00.000Z
+USR-0007,Laia,Ortega Soler,laia-ortega.0007@renodo.example,manager,Usera,HUB-MAD-007,true,2024-11-06T10:00:00.000Z
+USR-0008,Irene,Molina Cano,irene-molina.0008@renodo.example,manager,Puente de Vallecas,HUB-MAD-008,true,2024-11-17T10:00:00.000Z
+USR-0009,Inés,Romero Díaz,ines-romero.0009@renodo.example,manager,Retiro,HUB-MAD-009,true,2024-11-28T10:00:00.000Z
+USR-0010,Álvaro,Vidal Serra,alvaro-vidal.0010@renodo.example,manager,Hortaleza,HUB-MAD-010,true,2024-12-09T10:00:00.000Z
+USR-0011,Leo,Navarro Gil,leo-navarro.0011@renodo.example,manager,Latina,HUB-MAD-011,true,2024-12-20T10:00:00.000Z
+USR-0012,Álvaro,Campos Peña,alvaro-campos.0012@renodo.example,manager,Moncloa-Aravaca,HUB-MAD-012,true,2024-12-31T10:00:00.000Z
+USR-0013,Carmen,Navarro Gil,carmen-navarro.0013@renodo.example,manager,Centro,HUB-MAD-001,true,2025-01-11T10:00:00.000Z
+USR-0014,Mario,Molina Cano,mario-molina.0014@renodo.example,manager,Centro,HUB-MAD-002,true,2025-01-22T10:00:00.000Z
+USR-0015,Carmen,Santos Vega,carmen-santos.0015@renodo.example,member,Arganzuela,HUB-MAD-003,true,2025-02-02T10:00:00.000Z
+USR-0016,Marta,Molina Cano,marta-molina.0016@renodo.example,member,Chamberí,HUB-MAD-004,true,2025-02-13T10:00:00.000Z
+USR-0017,Paula,García Martín,paula-garcia.0017@renodo.example,member,Tetuán,HUB-MAD-005,true,2025-02-24T10:00:00.000Z
+USR-0018,Daniel,Ortega Soler,daniel-ortega.0018@renodo.example,member,Carabanchel,HUB-MAD-006,true,2025-03-07T10:00:00.000Z
+USR-0019,Paula,Campos Peña,paula-campos.0019@renodo.example,member,Usera,HUB-MAD-007,true,2025-03-18T10:00:00.000Z
+USR-0020,Iker,Torres León,iker-torres.0020@renodo.example,member,Puente de Vallecas,HUB-MAD-008,true,2025-03-29T10:00:00.000Z
+USR-0021,Hugo,Prieto Luna,hugo-prieto.0021@renodo.example,member,Retiro,HUB-MAD-009,true,2025-04-09T10:00:00.000Z
+USR-0022,Álvaro,Campos Peña,alvaro-campos.0022@renodo.example,member,Hortaleza,HUB-MAD-010,true,2025-04-20T10:00:00.000Z
+USR-0023,Inés,Vidal Serra,ines-vidal.0023@renodo.example,member,Latina,HUB-MAD-011,true,2025-05-01T10:00:00.000Z
+USR-0024,Iker,Navarro Gil,iker-navarro.0024@renodo.example,member,Moncloa-Aravaca,HUB-MAD-012,false,2025-05-12T10:00:00.000Z
+USR-0025,Irene,García Martín,irene-garcia.0025@renodo.example,member,Centro,HUB-MAD-001,true,2025-05-23T10:00:00.000Z
+USR-0026,Nora,Santos Vega,nora-santos.0026@renodo.example,member,Centro,HUB-MAD-002,true,2025-06-03T10:00:00.000Z
+USR-0027,Adrián,Castro Ríos,adrian-castro.0027@renodo.example,member,Arganzuela,HUB-MAD-003,true,2025-06-14T10:00:00.000Z
+USR-0028,Paula,Castro Ríos,paula-castro.0028@renodo.example,member,Chamberí,HUB-MAD-004,true,2025-06-25T10:00:00.000Z
+USR-0029,Omar,Ortega Soler,omar-ortega.0029@renodo.example,member,Tetuán,HUB-MAD-005,true,2025-07-06T10:00:00.000Z
+USR-0030,Hugo,Vidal Serra,hugo-vidal.0030@renodo.example,member,Carabanchel,HUB-MAD-006,true,2025-07-17T10:00:00.000Z
+USR-0031,Paula,Torres León,paula-torres.0031@renodo.example,member,Usera,HUB-MAD-007,true,2025-07-28T10:00:00.000Z
+USR-0032,Daniel,Torres León,daniel-torres.0032@renodo.example,member,Puente de Vallecas,HUB-MAD-008,true,2025-08-08T10:00:00.000Z
+USR-0033,Nora,García Martín,nora-garcia.0033@renodo.example,member,Retiro,HUB-MAD-009,true,2025-08-19T10:00:00.000Z
+USR-0034,Bruno,López Ruiz,bruno-lopez.0034@renodo.example,member,Hortaleza,HUB-MAD-010,true,2025-08-30T10:00:00.000Z
+USR-0035,Sara,Santos Vega,sara-santos.0035@renodo.example,member,Latina,HUB-MAD-011,true,2025-09-10T10:00:00.000Z
+USR-0036,Leo,Torres León,leo-torres.0036@renodo.example,member,Moncloa-Aravaca,HUB-MAD-012,true,2025-09-21T10:00:00.000Z
+USR-0037,Leo,Castro Ríos,leo-castro.0037@renodo.example,member,Centro,HUB-MAD-001,true,2025-10-02T10:00:00.000Z
+USR-0038,Mario,López Ruiz,mario-lopez.0038@renodo.example,member,Centro,HUB-MAD-002,true,2025-10-13T10:00:00.000Z
+USR-0039,Omar,Navarro Gil,omar-navarro.0039@renodo.example,member,Arganzuela,HUB-MAD-003,true,2025-10-24T10:00:00.000Z
+USR-0040,Nora,Molina Cano,nora-molina.0040@renodo.example,member,Chamberí,HUB-MAD-004,true,2025-11-04T10:00:00.000Z
+USR-0041,Carmen,Santos Vega,carmen-santos.0041@renodo.example,member,Tetuán,HUB-MAD-005,true,2025-11-15T10:00:00.000Z
+USR-0042,Paula,Molina Cano,paula-molina.0042@renodo.example,member,Carabanchel,HUB-MAD-006,true,2025-11-26T10:00:00.000Z
+USR-0043,Elena,Ortega Soler,elena-ortega.0043@renodo.example,member,Usera,HUB-MAD-007,true,2025-12-07T10:00:00.000Z
+USR-0044,Irene,García Martín,irene-garcia.0044@renodo.example,member,Puente de Vallecas,HUB-MAD-008,true,2025-12-18T10:00:00.000Z
+USR-0045,Álvaro,Ortega Soler,alvaro-ortega.0045@renodo.example,member,Retiro,HUB-MAD-009,true,2025-12-29T10:00:00.000Z
+USR-0046,Paula,García Martín,paula-garcia.0046@renodo.example,member,Hortaleza,HUB-MAD-010,true,2026-01-09T10:00:00.000Z
+USR-0047,Irene,Ortega Soler,irene-ortega.0047@renodo.example,member,Latina,HUB-MAD-011,false,2026-01-20T10:00:00.000Z
+USR-0048,Iker,Navarro Gil,iker-navarro.0048@renodo.example,member,Moncloa-Aravaca,HUB-MAD-012,true,2026-01-31T10:00:00.000Z
+USR-0049,Paula,Navarro Gil,paula-navarro.0049@renodo.example,member,Centro,HUB-MAD-001,true,2026-02-11T10:00:00.000Z
+USR-0050,Mario,Ortega Soler,mario-ortega.0050@renodo.example,member,Centro,HUB-MAD-002,true,2026-02-22T10:00:00.000Z
+USR-0051,Laia,Romero Díaz,laia-romero.0051@renodo.example,member,Arganzuela,HUB-MAD-003,true,2026-03-05T10:00:00.000Z
+USR-0052,Inés,Campos Peña,ines-campos.0052@renodo.example,member,Chamberí,HUB-MAD-004,true,2026-03-16T10:00:00.000Z
+USR-0053,Inés,Prieto Luna,ines-prieto.0053@renodo.example,member,Tetuán,HUB-MAD-005,true,2026-03-27T10:00:00.000Z
+USR-0054,Hugo,Navarro Gil,hugo-navarro.0054@renodo.example,member,Carabanchel,HUB-MAD-006,true,2026-04-07T10:00:00.000Z
+USR-0055,Inés,Torres León,ines-torres.0055@renodo.example,member,Usera,HUB-MAD-007,true,2026-04-18T10:00:00.000Z
+USR-0056,Sara,López Ruiz,sara-lopez.0056@renodo.example,member,Puente de Vallecas,HUB-MAD-008,true,2026-04-29T10:00:00.000Z
+USR-0057,Carmen,Santos Vega,carmen-santos.0057@renodo.example,member,Retiro,HUB-MAD-009,true,2026-05-10T10:00:00.000Z
+USR-0058,Marta,Santos Vega,marta-santos.0058@renodo.example,member,Hortaleza,HUB-MAD-010,true,2026-05-21T10:00:00.000Z
+USR-0059,Álvaro,García Martín,alvaro-garcia.0059@renodo.example,member,Latina,HUB-MAD-011,true,2026-06-01T10:00:00.000Z
+USR-0060,Daniel,Torres León,daniel-torres.0060@renodo.example,member,Moncloa-Aravaca,HUB-MAD-012,true,2026-06-12T10:00:00.000Z

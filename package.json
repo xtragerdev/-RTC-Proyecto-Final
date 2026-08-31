@@ -1,0 +1,19 @@
+{
+  "name": "renodo-fullstack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Biblioteca comunitaria de objetos con React, Node.js, Express y MongoDB.",
+  "scripts": {
+    "dev:api": "npm --prefix apps/api run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "seed": "npm --prefix apps/api run seed",
+    "test": "npm --prefix apps/api test",
+    "lint": "npm --prefix apps/api run lint && npm --prefix apps/web run lint",
+    "build": "npm --prefix apps/web run build",
+    "check": "npm --prefix apps/api run check && npm --prefix apps/web run lint && npm --prefix apps/web run build"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "license": "MIT"
+}
