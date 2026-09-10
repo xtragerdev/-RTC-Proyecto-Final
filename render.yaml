@@ -34,13 +34,13 @@ services:
     runtime: node
     rootDir: apps/web
     plan: free
-    buildCommand: npm ci && npm run build
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /
     autoDeploy: true
     envVars:
-      - key: NODE_ENV
-        value: production
+      # Sin NODE_ENV aquí: npm ci necesita instalar devDependencies para el build
+      # (Tailwind/PostCSS) y Next.js fija NODE_ENV=production por sí mismo.
       # NEXT_PUBLIC_* se incrustan en el build de Next.js; deben existir al compilar.
       - key: NEXT_PUBLIC_API_URL
         sync: false
