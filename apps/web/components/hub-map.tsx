@@ -6,10 +6,12 @@ import 'leaflet/dist/leaflet.css';
 
 import type { Hub } from '@/lib/types';
 
-const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_LIGHT =
+  'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+const TILE_DARK =
+  'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
 const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>';
+  'Teselas &copy; <a href="https://www.esri.com" target="_blank" rel="noreferrer">Esri</a> &mdash; Esri, DeLorme, NAVTEQ';
 
 const PIN_SVG =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
@@ -67,7 +69,7 @@ export function HubMap({ hubs, selectedId, onSelect }: HubMapProps) {
       const dark = document.documentElement.classList.contains('dark');
       tileRef.current = L.tileLayer(dark ? TILE_DARK : TILE_LIGHT, {
         attribution: TILE_ATTRIBUTION,
-        maxZoom: 19,
+        maxZoom: 16,
       }).addTo(map);
 
       observer = new MutationObserver(() => {
