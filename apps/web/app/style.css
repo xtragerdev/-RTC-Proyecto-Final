@@ -1620,44 +1620,31 @@ textarea:focus-visible {
   box-shadow: var(--shadow-soft);
 }
 
-.map-grid {
+.hub-map {
   position: relative;
-  min-height: 390px;
-  overflow: hidden;
-  background:
-    linear-gradient(35deg, transparent 47%, rgb(23 55 46 / 6%) 48%, rgb(23 55 46 / 6%) 52%, transparent 53%),
-    linear-gradient(125deg, transparent 47%, rgb(23 55 46 / 6%) 48%, rgb(23 55 46 / 6%) 52%, transparent 53%),
-    #e9e4d5;
-  background-size: 90px 90px, 110px 110px, auto;
+  z-index: 1;
+  height: 420px;
+  background: #e9e4d5;
 }
 
-.map-grid::after {
-  content: 'MADRID';
-  position: absolute;
-  right: 1rem;
-  bottom: 0.5rem;
-  color: rgb(23 55 46 / 18%);
-  font-size: 3rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+.dark .hub-map { background: var(--background); }
+
+.hub-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  font: inherit;
+  outline: none;
 }
 
-.map-road {
-  position: absolute;
-  height: 9px;
-  border: 2px solid rgb(255 253 247 / 84%);
-  border-radius: 99px;
-  background: #c8beaa;
-  transform-origin: center;
+/* Pins de los nodos */
+
+.hub-map .hub-marker {
+  border: none;
+  background: none;
 }
 
-.road-one { width: 120%; top: 42%; left: -10%; transform: rotate(-12deg); }
-.road-two { width: 100%; top: 50%; left: -2%; transform: rotate(52deg); }
-.road-three { width: 85%; top: 68%; left: 15%; transform: rotate(18deg); }
-
-.map-pin {
-  position: absolute;
-  z-index: 2;
+.hub-pin {
+  position: relative;
   display: grid;
   width: 34px;
   height: 34px;
@@ -1665,13 +1652,104 @@ textarea:focus-visible {
   border: 2px solid var(--card);
   border-radius: 50%;
   background: var(--primary);
-  color: var(--card);
-  box-shadow: 0 5px 14px rgb(23 55 46 / 24%);
+  color: var(--primary-foreground);
+  box-shadow: 0 6px 16px rgb(23 55 46 / 32%);
+  transition: transform 0.18s ease, background-color 0.18s ease;
 }
 
-.map-pin svg { width: 17px; }
-.map-pin.is-selected { width: 44px; height: 44px; background: #d17a52; transform: translate(-5px, -5px); }
-.pin-1 { left: 42%; top: 26%; }.pin-2 { left: 35%; top: 48%; }.pin-3 { left: 54%; top: 64%; }.pin-4 { left: 58%; top: 19%; }.pin-5 { left: 69%; top: 33%; }.pin-6 { left: 66%; top: 68%; }
+.hub-pin svg { width: 16px; height: 16px; }
+
+.hub-pin:hover { transform: scale(1.14); }
+
+.hub-pin.is-selected {
+  width: 42px;
+  height: 42px;
+  background: #d17a52;
+}
+
+.hub-pin.is-selected::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 2px solid rgb(209 122 82 / 55%);
+  border-radius: 50%;
+  animation: hub-pin-pulse 1.8s ease-out infinite;
+}
+
+@keyframes hub-pin-pulse {
+  0% { transform: scale(0.72); opacity: 1; }
+  100% { transform: scale(1.28); opacity: 0; }
+}
+
+/* Controles y popups de Leaflet acordes a la marca */
+
+.hub-map .leaflet-bar {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.hub-map .leaflet-bar a {
+  width: 34px;
+  height: 34px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  line-height: 34px;
+}
+
+.hub-map .leaflet-bar a:last-child { border-bottom: none; }
+
+.hub-map .leaflet-bar a:hover {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.hub-map .leaflet-control-attribution {
+  padding: 2px 8px;
+  background: rgb(255 253 247 / 80%);
+  color: #6f6a5c;
+  font-size: 0.6rem;
+}
+
+.hub-map .leaflet-control-attribution a { color: #6f6a5c; }
+
+.dark .hub-map .leaflet-control-attribution,
+.dark .hub-map .leaflet-control-attribution a {
+  background: rgb(16 37 31 / 80%);
+  color: #9fb3aa;
+}
+
+.hub-map .leaflet-popup-content-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: var(--shadow-soft);
+}
+
+.hub-map .leaflet-popup-content {
+  margin: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.hub-map .leaflet-popup-tip {
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: none;
+}
+
+.hub-popup { display: grid; gap: 0.15rem; }
+
+.hub-popup strong { font-size: 0.85rem; }
+
+.hub-popup span {
+  color: var(--muted-foreground);
+  font-size: 0.68rem;
+}
 
 .map-detail {
   padding: 1.25rem;
@@ -2487,7 +2565,7 @@ textarea:focus-visible {
   .hero-stats { min-width: 0; grid-template-columns: 1fr; }
   .hero-stats span { grid-template-columns: auto auto 1fr; justify-items: start; border-right: 0; border-bottom: 1px solid var(--border); }
   .hero-stats span:last-child { border-bottom: 0; }
-  .map-grid { min-height: 300px; }
+  .hub-map { height: 320px; }
   .how-hero { padding: var(--space-5); }
   .how-steps ol { grid-template-columns: 1fr; }
   .how-steps li { min-height: 0; }

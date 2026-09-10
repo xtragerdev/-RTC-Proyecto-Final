@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { HubMap } from '@/components/hub-map';
 import { hubs, items } from '@/lib/demo-data';
 
 export function CenterDirectory() {
@@ -60,22 +61,7 @@ export function CenterDirectory() {
         </div>
 
         <aside className="community-map" aria-label={`Mapa de ${selected.name}`}>
-          <div className="map-grid" aria-hidden="true">
-            <span className="map-road road-one" />
-            <span className="map-road road-two" />
-            <span className="map-road road-three" />
-            {hubs.map((hub, index) => (
-              <button
-                type="button"
-                className={`map-pin pin-${index + 1}${selected.id === hub.id ? ' is-selected' : ''}`}
-                tabIndex={-1}
-                key={hub.id}
-                onClick={() => setSelectedId(hub.id)}
-              >
-                <MapPin aria-hidden="true" />
-              </button>
-            ))}
-          </div>
+          <HubMap hubs={visibleHubs} selectedId={selected.id} onSelect={setSelectedId} />
           <div className="map-detail">
             <span>{selected.district} · {selected.neighborhood}</span>
             <h2>{selected.name}</h2>
