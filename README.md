@@ -20,8 +20,49 @@ inventario compartido, trazable y cuidado por el barrio.
 - **Memoria del proyecto:** [`docs/ReNodo-Memoria-Proyecto.pdf`](docs/ReNodo-Memoria-Proyecto.pdf)
 - **Guía de despliegue:** [`docs/deployment.md`](docs/deployment.md)
 
+> ⚠️ **Nota sobre el despliegue:** frontend y API están en el plan gratuito de Render, que
+> suspende los servicios tras 15 minutos sin tráfico (*cold start*). Si la primera carga
+> tarda alrededor de un minuto, es el comportamiento esperado: la primera petición
+> reactiva los servicios y, a partir de ahí, todo responde con normalidad.
+
 > El frontend ofrece accesos demostrativos para miembro, responsable y administrador. No
 > utiliza datos personales ni modifica la base real en ese modo.
+
+## Guía rápida de corrección
+
+Recorrido sugerido de unos 5 minutos sobre el despliegue:
+
+1. **Inicio y Explorar:** el catálogo se carga en vivo desde la API desplegada
+   (180 objetos reales sembrados desde el Excel).
+2. **Ficha de objeto:** condición, fianza reembolsable, impacto y centro de recogida.
+3. **Reserva:** desde la ficha, «Solicitar reserva» registra la solicitud y muestra el
+   estado de enviada.
+4. **Roles en `/acceso`:** los botones demostrativos de **Miembro**, **Responsable** y
+   **Admin** permiten revisar cada experiencia sin credenciales. El responsable ve la cola
+   de solicitudes y puede aprobar o rechazar; el admin gestiona la red y los roles.
+5. **Centros:** mapa interactivo real con Leaflet, sincronizado con el listado.
+6. **API:** documentación interactiva en [Swagger](https://renodo-api.onrender.com/api-docs).
+
+Cuenta real sembrada para probar el login contra la API: `iker-navarro.0002@renodo.example`
+con contraseña `ReNodoDemo2026!`. Todas las cuentas del dataset son sintéticas.
+
+## Capturas (despliegue en producción)
+
+| Inicio | Catálogo servido por la API |
+|---|---|
+| ![Inicio de ReNodo](docs/capturas/inicio.png) | ![Catálogo con filtros](docs/capturas/catalogo.png) |
+
+| Reserva enviada | Mapa real de centros (Leaflet) |
+|---|---|
+| ![Reserva enviada](docs/capturas/reserva-enviada.png) | ![Mapa de centros](docs/capturas/mapa-centros.png) |
+
+| Panel de responsable | Panel de administración |
+|---|---|
+| ![Panel de responsable](docs/capturas/panel-responsable.png) | ![Panel de administración](docs/capturas/panel-admin.png) |
+
+| Cuenta de miembro |
+|---|
+| ![Cuenta de miembro](docs/capturas/cuenta-miembro.png) |
 
 ## Público y propuesta de valor
 
@@ -49,6 +90,16 @@ La experiencia responde siempre a tres preguntas:
 - Historial de reservas y cancelación optimista.
 - Perfil, seguridad y eliminación de la propia cuenta.
 - Avatar mediante `multipart/form-data` y Cloudinary.
+
+### Centros y mapa
+
+- Mapa interactivo real con **Leaflet** y teselas Esri (gratuitas, sin clave), posicionado
+  con las coordenadas GeoJSON de cada centro.
+- Sincronización lista ↔ mapa: al elegir un centro el mapa vuela hasta él y abre su ficha;
+  al pulsar un pin se selecciona en el listado.
+- Teselas claras u oscuras según el tema activo de la interfaz.
+- El zoom con rueda solo se activa al interactuar con el mapa, para no bloquear el scroll
+  de la página.
 
 ### Operación de centros
 
@@ -121,6 +172,7 @@ renodo/
 │   ├── ReNodo-dataset.xlsx
 │   └── manifest.json
 ├── docs/
+│   ├── capturas/            # Capturas del despliegue en producción
 │   ├── architecture.md
 │   └── rubric.md
 ├── render.yaml
@@ -234,6 +286,8 @@ ganar; los rangos adyacentes sí se permiten.
 - React Hook Form + Zod.
 - Sonner para feedback no bloqueante.
 - Base UI, shadcn y Lucide.
+- Leaflet con teselas Esri para el mapa interactivo de centros (librería no vista en el
+  curso).
 - CSS responsive con variables y `color-mix()`.
 
 ### Backend
