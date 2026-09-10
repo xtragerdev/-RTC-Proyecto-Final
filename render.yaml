@@ -29,3 +29,20 @@ services:
         sync: false
       - key: CLOUDINARY_FOLDER
         value: renodo
+  - type: web
+    name: renodo-web
+    runtime: node
+    rootDir: apps/web
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # NEXT_PUBLIC_* se incrustan en el build de Next.js; deben existir al compilar.
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false

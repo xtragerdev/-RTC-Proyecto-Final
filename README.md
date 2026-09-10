@@ -13,11 +13,12 @@ inventario compartido, trazable y cuidado por el barrio.
 ## Enlaces
 
 - **Repositorio:** [github.com/xtragerdev/-RTC-Proyecto-Final](https://github.com/xtragerdev/-RTC-Proyecto-Final)
-- **Frontend:** pendiente de publicación en un dominio neutral
-- **API:** pendiente de completar la publicación
+- **Frontend:** `https://renodo-web.onrender.com` <!-- TODO: sustituir por la URL real tras el despliegue -->
+- **API:** `https://renodo-api.onrender.com/api/v1` · **Swagger:** `https://renodo-api.onrender.com/api-docs` <!-- TODO: confirmar URL real -->
 - **Documentación REST local:** `http://localhost:4000/api-docs`
 - **Dataset:** [`data/ReNodo-dataset.xlsx`](data/ReNodo-dataset.xlsx)
 - **Memoria del proyecto:** [`docs/ReNodo-Memoria-Proyecto.pdf`](docs/ReNodo-Memoria-Proyecto.pdf)
+- **Guía de despliegue:** [`docs/deployment.md`](docs/deployment.md)
 
 > El frontend ofrece accesos demostrativos para miembro, responsable y administrador. No
 > utiliza datos personales ni modifica la base real en ese modo.
@@ -180,7 +181,7 @@ Controles finales del libro y del auditor de la API:
 
 La semilla de `apps/api/src/seeds/seedDatabase.js`:
 
-1. Lee los cuatro CSV con `fs.promises.readFile()`.
+1. Lee los cuatro CSV con `node:fs` (`createReadStream`, en streaming).
 2. Convierte el CSV mediante `csv-parse`.
 3. Valida tipos, fechas, enums y relaciones.
 4. Resuelve códigos externos a `_id` de MongoDB.
@@ -225,7 +226,9 @@ ganar; los rangos adyacentes sí se permiten.
 
 ### Frontend
 
-- React 19 y TypeScript.
+- React 19 y TypeScript. La interfaz completa son componentes React con hooks y Context;
+  Next.js se utiliza únicamente como framework sobre React (App Router, rutas y despliegue),
+  como tecnología adicional no vista en el curso.
 - Next.js con App Router y despliegue compatible con proveedores Node.js.
 - TanStack Query.
 - React Hook Form + Zod.
