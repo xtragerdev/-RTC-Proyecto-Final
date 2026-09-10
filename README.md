@@ -13,8 +13,8 @@ inventario compartido, trazable y cuidado por el barrio.
 ## Enlaces
 
 - **Repositorio:** [github.com/xtragerdev/-RTC-Proyecto-Final](https://github.com/xtragerdev/-RTC-Proyecto-Final)
-- **Frontend:** `https://renodo-web.onrender.com` <!-- TODO: sustituir por la URL real tras el despliegue -->
-- **API:** `https://renodo-api.onrender.com/api/v1` · **Swagger:** `https://renodo-api.onrender.com/api-docs` <!-- TODO: confirmar URL real -->
+- **Frontend:** [renodo-web.onrender.com](https://renodo-web.onrender.com)
+- **API:** [renodo-api.onrender.com/api/v1](https://renodo-api.onrender.com/api/v1) · **Swagger:** [renodo-api.onrender.com/api-docs](https://renodo-api.onrender.com/api-docs)
 - **Documentación REST local:** `http://localhost:4000/api-docs`
 - **Dataset:** [`data/ReNodo-dataset.xlsx`](data/ReNodo-dataset.xlsx)
 - **Memoria del proyecto:** [`docs/ReNodo-Memoria-Proyecto.pdf`](docs/ReNodo-Memoria-Proyecto.pdf)
