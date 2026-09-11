@@ -1,5 +1,5 @@
 import { items as demoItems } from './demo-data';
-import type { Item, ItemFilters, Reservation, User } from './types';
+import type { Hub, Item, ItemFilters, Reservation, User, UserRole } from './types';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/$/, '');
 
@@ -140,6 +140,75 @@ export async function cancelReservationRequest(token: string, id: string) {
   return apiRequest<Reservation>(`/api/v1/reservations/${id}`, {
     method: 'DELETE',
     token,
+  });
+}
+
+export async function getManagedReservations(
+  token: string,
+): Promise<Reservation[]> {
+  const result = await apiRequest<ApiEnvelope<Reservation[]>>(
+    '/api/v1/reservations?limit=50',
+    { token },
+  );
+  if (Array.isArray(result)) return result;
+  return result.data;
+}
+
+export async function updateReservationStatusRequest(
+  token: string,
+  id: string,
+  status: Reservation['status'],
+) {
+  return apiRequest<Reservation>(`/api/v1/reservations/${id}/status`, {
+    method: 'PATCH',
+    token,
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function getManagedHubs(token: string): Promise<Hub[]> {
+  const result = await apiRequest<ApiEnvelope<Hub[]>>('/api/v1/hubs?limit=50', {
+    token,
+  });
+  return Array.isArray(result) ? result : result.data;
+}
+
+export async function getItemsByHub(hubSlug: string): Promise<Item[]> {
+  const result = await apiRequest<ApiEnvelope<Item[]>>(
+    `/api/v1/items?hub=${encodeURIComponent(hubSlug)}&limit=100`,
+  );
+  return Array.isArray(result) ? result : result.data;
+}
+
+export async function getUsers(token: string): Promise<User[]> {
+  const result = await apiRequest<ApiEnvelope<User[]>>(
+    '/api/v1/users?limit=100',
+    { token },
+  );
+  return Array.isArray(result) ? result : result.data;
+}
+
+export async function updateUserRoleRequest(
+  token: string,
+  id: string,
+  role: UserRole,
+) {
+  return apiRequest<User>(`/api/v1/users/${id}/role`, {
+    method: 'PATCH',
+    token,
+    body: JSON.stringify({ role }),
+  });
+}
+
+export async function updateItemStatusRequest(
+  token: string,
+  id: string,
+  status: Item['status'],
+) {
+  return apiRequest<Item>(`/api/v1/items/${id}`, {
+    method: 'PATCH',
+    token,
+    body: JSON.stringify({ status }),
   });
 }
 

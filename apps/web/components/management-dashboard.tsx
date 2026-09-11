@@ -15,19 +15,36 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useReducer, useState, useTransition } from 'react';
+import {
+  useEffect,
+  useState,
+  useTransition,
+} from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth-context';
+import {
+  getItemsByHub,
+  getManagedHubs,
+  getManagedReservations,
+  getUsers,
+  updateItemStatusRequest,
+  updateReservationStatusRequest,
+  updateUserRoleRequest,
+} from '@/lib/api';
 import { demoReservations, demoUsers, items } from '@/lib/demo-data';
-import type { Reservation, User, UserRole } from '@/lib/types';
+import type { Hub, Item, Reservation, User, UserRole } from '@/lib/types';
 
-type QueueAction = {
-  type: 'STATUS';
-  id: string;
-  status: Reservation['status'];
-};
+function setReservationStatus(
+  state: Reservation[],
+  id: string,
+  status: Reservation['status'],
+) {
+  return state.map((reservation) =>
+    reservation.id === id ? { ...reservation, status } : reservation,
+  );
+}
 
 const queueSeed: Reservation[] = [
   {
@@ -106,16 +123,6 @@ const userSeed: User[] = [
   },
 ];
 
-function queueReducer(state: Reservation[], action: QueueAction) {
-  if (action.type === 'STATUS')
-    return state.map((reservation) =>
-      reservation.id === action.id
-        ? { ...reservation, status: action.status }
-        : reservation,
-    );
-  return state;
-}
-
 const statusLabel = {
   requested: 'Pendiente',
   approved: 'Aprobada',
@@ -129,19 +136,106 @@ const formatDate = new Intl.DateTimeFormat('es-ES', {
   day: '2-digit',
   month: 'short',
 });
+const todayLabel = new Intl.DateTimeFormat('es-ES', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(new Date());
 
 export function ManagementDashboard() {
-  const { user, ready } = useAuth();
+  const { user, ready, demoMode, token } = useAuth();
   const [tab, setTab] = useState<'queue' | 'inventory' | 'users'>('queue');
-  const [queue, dispatch] = useReducer(queueReducer, queueSeed);
-  const [managedUsers, setManagedUsers] = useState(userSeed);
+  const [queue, setQueue] = useState<Reservation[]>(queueSeed);
+  const [managedUsers, setManagedUsers] = useState<User[]>(userSeed);
+  const [managedHubs, setManagedHubs] = useState<Hub[]>([]);
+  const [hubItems, setHubItems] = useState<Item[]>(items.slice(0, 8));
+  const [loadingData, setLoadingData] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
   const [isPending, startTransition] = useTransition();
   const canManage = user?.role === 'manager' || user?.role === 'admin';
   const isAdmin = user?.role === 'admin';
   const pendingCount = queue.filter(
     (reservation) => reservation.status === 'requested',
   ).length;
-  const hubItems = useMemo(() => items.slice(0, 8), []);
+  const filteredQueue =
+    statusFilter === 'all'
+      ? queue
+      : queue.filter((reservation) => reservation.status === statusFilter);
+
+  useEffect(() => {
+    if (demoMode || !token || !user || !canManage) return;
+    let cancelled = false;
+    setLoadingData(true);
+
+    const load = async () => {
+      try {
+        const [reservationData, hubData] = await Promise.all([
+          getManagedReservations(token),
+          getManagedHubs(token),
+        ]);
+        if (cancelled) return;
+        setQueue(reservationData);
+
+        const ownHubs =
+          user.role === 'admin'
+            ? hubData
+            : hubData.filter((hub) =>
+                (hub.managers ?? []).some(
+                  (manager) =>
+                    (typeof manager === 'string' ? manager : manager.id) ===
+                    user.id,
+                ),
+              );
+        setManagedHubs(ownHubs);
+
+        const itemLists = await Promise.all(
+          ownHubs.slice(0, 4).map((hub) => getItemsByHub(hub.slug)),
+        );
+        if (cancelled) return;
+        setHubItems(itemLists.flat());
+
+        if (user.role === 'admin') {
+          const userData = await getUsers(token);
+          if (!cancelled) setManagedUsers(userData);
+        }
+      } catch (error) {
+        if (!cancelled)
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'No se pudieron cargar los datos de gestión.',
+          );
+      } finally {
+        if (!cancelled) setLoadingData(false);
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [demoMode, token, user, canManage]);
+
+  const activeLoans = queue.filter(
+    (entry) => entry.status === 'collected',
+  ).length;
+  const inventoryUsage =
+    hubItems.length > 0
+      ? Math.round(
+          (hubItems.filter((item) => item.status !== 'available').length /
+            hubItems.length) *
+            100,
+        )
+      : 0;
+  const closedLoans = queue.filter((entry) =>
+    ['returned', 'overdue'].includes(entry.status),
+  );
+  const onTimeRate = closedLoans.length
+    ? Math.round(
+        (closedLoans.filter((entry) => entry.status === 'returned').length /
+          closedLoans.length) *
+          100,
+      )
+    : 100;
 
   if (!ready)
     return <div className="dashboard-loading">Comprobando permisos…</div>;
@@ -162,24 +256,80 @@ export function ManagementDashboard() {
   }
 
   function updateStatus(id: string, status: Reservation['status']) {
-    startTransition(() => dispatch({ type: 'STATUS', id, status }));
-    toast.success(
+    const successMessage =
       status === 'approved'
         ? 'Reserva aprobada.'
         : status === 'rejected'
           ? 'Solicitud rechazada.'
-          : 'Estado actualizado.',
+          : 'Estado actualizado.';
+    if (demoMode || !token) {
+      startTransition(() =>
+        setQueue((current) => setReservationStatus(current, id, status)),
+      );
+      toast.success(successMessage);
+      return;
+    }
+    const previous = queue;
+    startTransition(() =>
+      setQueue((current) => setReservationStatus(current, id, status)),
     );
+    updateReservationStatusRequest(token, id, status)
+      .then(() => toast.success(successMessage))
+      .catch((error) => {
+        setQueue(previous);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'No se pudo actualizar la reserva.',
+        );
+      });
   }
 
   function updateRole(userId: string, role: UserRole) {
     if (!isAdmin) return;
+    const previous = managedUsers;
     setManagedUsers((current) =>
       current.map((entry) =>
         entry.id === userId ? { ...entry, role } : entry,
       ),
     );
-    toast.success('Rol actualizado con permisos de administración.');
+    if (demoMode || !token) {
+      toast.success('Rol actualizado con permisos de administración.');
+      return;
+    }
+    updateUserRoleRequest(token, userId, role)
+      .then(() =>
+        toast.success('Rol actualizado con permisos de administración.'),
+      )
+      .catch((error) => {
+        setManagedUsers(previous);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'No se pudo actualizar el rol.',
+        );
+      });
+  }
+
+  function updateItemStatus(id: string, status: Item['status']) {
+    const previous = hubItems;
+    setHubItems((current) =>
+      current.map((item) => (item.id === id ? { ...item, status } : item)),
+    );
+    if (demoMode || !token) {
+      toast.success('Estado del objeto actualizado.');
+      return;
+    }
+    updateItemStatusRequest(token, id, status)
+      .then(() => toast.success('Estado del objeto actualizado.'))
+      .catch((error) => {
+        setHubItems(previous);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'No se pudo actualizar el objeto.',
+        );
+      });
   }
 
   return (
@@ -187,7 +337,13 @@ export function ManagementDashboard() {
       <aside className="management-sidebar">
         <div>
           <p className="eyebrow">Panel de operaciones</p>
-          <h1>{isAdmin ? 'Red ReNodo' : 'Nodo Palos de Moguer'}</h1>
+          <h1>
+            {isAdmin
+              ? 'Red ReNodo'
+              : managedHubs.length > 0
+                ? managedHubs.map((hub) => hub.name).join(' · ')
+                : 'Mi nodo'}
+          </h1>
           <span className="role-pill">
             {isAdmin ? 'Administración' : 'Responsable de centro'}
           </span>
@@ -227,7 +383,7 @@ export function ManagementDashboard() {
       <section className="management-content">
         <header className="management-header">
           <div>
-            <p className="section-kicker">31 de agosto de 2026</p>
+            <p className="section-kicker">{todayLabel}</p>
             <h2>
               {tab === 'queue'
                 ? 'Reservas y entregas'
@@ -252,25 +408,23 @@ export function ManagementDashboard() {
           </article>
           <article>
             <span>Préstamos activos</span>
-            <strong>
-              {queue.filter((entry) => entry.status === 'collected').length}
-            </strong>
+            <strong>{activeLoans}</strong>
             <small>
               <PackageCheck aria-hidden="true" /> En circulación
             </small>
           </article>
           <article>
             <span>Uso del inventario</span>
-            <strong>74%</strong>
+            <strong>{inventoryUsage}%</strong>
             <small>
-              <BarChart3 aria-hidden="true" /> +8% este mes
+              <BarChart3 aria-hidden="true" /> Objetos en préstamo o retirados
             </small>
           </article>
           <article>
             <span>Devoluciones a tiempo</span>
-            <strong>96%</strong>
+            <strong>{onTimeRate}%</strong>
             <small>
-              <Check aria-hidden="true" /> Últimos 90 días
+              <Check aria-hidden="true" /> Sobre préstamos cerrados
             </small>
           </article>
         </div>
@@ -286,10 +440,14 @@ export function ManagementDashboard() {
                   Aprueba solo después de comprobar disponibilidad y estado.
                 </p>
               </div>
-              <select aria-label="Filtrar por estado">
-                <option>Todos los estados</option>
-                <option>Pendientes</option>
-                <option>Aprobadas</option>
+              <select
+                aria-label="Filtrar por estado"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
+                <option value="all">Todos los estados</option>
+                <option value="requested">Pendientes</option>
+                <option value="approved">Aprobadas</option>
               </select>
             </div>
             <div className="responsive-table">
@@ -307,7 +465,16 @@ export function ManagementDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {queue.map((reservation) => (
+                  {loadingData ? (
+                    <tr>
+                      <td colSpan={6}>Cargando reservas…</td>
+                    </tr>
+                  ) : filteredQueue.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>No hay reservas con este estado.</td>
+                    </tr>
+                  ) : (
+                    filteredQueue.map((reservation) => (
                     <tr key={reservation.id}>
                       <td>
                         <strong>{reservation.code}</strong>
@@ -321,7 +488,7 @@ export function ManagementDashboard() {
                       <td>
                         <span className="table-item">
                           {reservation.item.name}
-                          <small>{reservation.item.code}</small>
+                          <small>{reservation.hub.name}</small>
                         </span>
                       </td>
                       <td>
@@ -359,6 +526,30 @@ export function ManagementDashboard() {
                               <X aria-hidden="true" />
                             </button>
                           </div>
+                        ) : reservation.status === 'approved' ? (
+                          <button
+                            className="detail-action"
+                            type="button"
+                            aria-label={`Registrar entrega de ${reservation.code}`}
+                            title="Registrar entrega"
+                            onClick={() =>
+                              updateStatus(reservation.id, 'collected')
+                            }
+                          >
+                            <PackageCheck aria-hidden="true" />
+                          </button>
+                        ) : reservation.status === 'collected' ? (
+                          <button
+                            className="detail-action"
+                            type="button"
+                            aria-label={`Registrar devolución de ${reservation.code}`}
+                            title="Registrar devolución"
+                            onClick={() =>
+                              updateStatus(reservation.id, 'returned')
+                            }
+                          >
+                            <ArrowUpRight aria-hidden="true" />
+                          </button>
                         ) : (
                           <button
                             className="detail-action"
@@ -370,7 +561,8 @@ export function ManagementDashboard() {
                         )}
                       </td>
                     </tr>
-                  ))}
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -381,7 +573,7 @@ export function ManagementDashboard() {
           <div className="inventory-board">
             <div className="table-intro">
               <div>
-                <h3>{hubItems.length} objetos destacados</h3>
+                <h3>{hubItems.length} objetos en tus nodos</h3>
                 <p>Actualiza el estado antes y después de cada entrega.</p>
               </div>
               <input
@@ -404,8 +596,14 @@ export function ManagementDashboard() {
                     <p>{item.hub.name}</p>
                   </div>
                   <select
-                    defaultValue={item.status}
+                    value={item.status}
                     aria-label={`Estado de ${item.name}`}
+                    onChange={(event) =>
+                      updateItemStatus(
+                        item.id,
+                        event.target.value as Item['status'],
+                      )
+                    }
                   >
                     <option value="available">Disponible</option>
                     <option value="maintenance">Mantenimiento</option>

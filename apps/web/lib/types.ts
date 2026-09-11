@@ -32,6 +32,7 @@ export interface Hub {
   contactEmail: string;
   coordinates: [number, number];
   active: boolean;
+  managers?: Array<{ id: string; name: string; role: UserRole } | string>;
 }
 
 export interface Item {
