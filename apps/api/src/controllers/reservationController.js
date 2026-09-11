@@ -18,7 +18,7 @@ import { getPagination, paginationMeta } from '../utils/pagination.js';
 const populateReservation = (query) =>
   query
     .populate('user', 'name email avatar district')
-    .populate('item', 'name slug image category status maxLoanDays')
+    .populate('item', 'name slug image category status maxLoanDays estimatedWasteKg')
     .populate('hub', 'name slug district image');
 
 const getReservationOrThrow = async (id) => {

@@ -127,4 +127,20 @@ export async function createReservationRequest(
   });
 }
 
+export async function getMyReservations(token: string): Promise<Reservation[]> {
+  const result = await apiRequest<ApiEnvelope<Reservation[]>>(
+    '/api/v1/reservations?mine=true',
+    { token },
+  );
+  if (Array.isArray(result)) return result;
+  return result.data;
+}
+
+export async function cancelReservationRequest(token: string, id: string) {
+  return apiRequest<Reservation>(`/api/v1/reservations/${id}`, {
+    method: 'DELETE',
+    token,
+  });
+}
+
 export { API_URL };

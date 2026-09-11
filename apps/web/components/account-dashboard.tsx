@@ -14,13 +14,17 @@ import {
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useOptimistic, useState, useTransition } from 'react';
+import { useEffect, useMemo, useOptimistic, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 import { ItemCard } from '@/components/item-card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth-context';
 import { useFavorites } from '@/hooks/use-favorites';
+import {
+  cancelReservationRequest,
+  getMyReservations,
+} from '@/lib/api';
 import { demoReservations, items } from '@/lib/demo-data';
 import type { Reservation } from '@/lib/types';
 
@@ -41,13 +45,14 @@ const dateFormatter = new Intl.DateTimeFormat('es-ES', {
 });
 
 export function AccountDashboard() {
-  const { user, ready, demoMode, logout } = useAuth();
+  const { user, ready, demoMode, token, logout } = useAuth();
   const { favorites, toggleFavorite } = useFavorites();
   const [tab, setTab] = useState<'reservations' | 'favorites' | 'profile'>(
     'reservations',
   );
   const [reservations, setReservations] =
     useState<Reservation[]>(demoReservations);
+  const [loadingReservations, setLoadingReservations] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [optimisticReservations, cancelOptimistically] = useOptimistic(
     reservations,
@@ -61,6 +66,49 @@ export function AccountDashboard() {
   const favoriteItems = useMemo(
     () => items.filter((item) => favorites.includes(item.id)),
     [favorites],
+  );
+
+  useEffect(() => {
+    if (demoMode) {
+      setReservations(demoReservations);
+      return;
+    }
+    if (!token) {
+      setReservations([]);
+      return;
+    }
+    let cancelled = false;
+    setLoadingReservations(true);
+    getMyReservations(token)
+      .then((data) => {
+        if (!cancelled) setReservations(data);
+      })
+      .catch((error) => {
+        if (!cancelled)
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'No se pudieron cargar tus reservas.',
+          );
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingReservations(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [demoMode, token]);
+
+  const completedLoans = useMemo(
+    () => reservations.filter((r) => r.status === 'returned').length,
+    [reservations],
+  );
+  const wasteAvoidedKg = useMemo(
+    () =>
+      reservations
+        .filter((r) => r.status === 'returned')
+        .reduce((sum, r) => sum + (r.item?.estimatedWasteKg ?? 0), 0),
+    [reservations],
   );
 
   if (!ready)
@@ -81,6 +129,8 @@ export function AccountDashboard() {
   function cancelReservation(id: string) {
     startTransition(() => {
       cancelOptimistically(id);
+    });
+    if (demoMode || !token) {
       setReservations((current) =>
         current.map((reservation) =>
           reservation.id === id
@@ -88,8 +138,28 @@ export function AccountDashboard() {
             : reservation,
         ),
       );
-    });
-    toast.success('Reserva cancelada. El objeto vuelve a estar disponible.');
+      toast.success('Reserva cancelada. El objeto vuelve a estar disponible.');
+      return;
+    }
+    cancelReservationRequest(token, id)
+      .then(() => {
+        setReservations((current) =>
+          current.map((reservation) =>
+            reservation.id === id
+              ? { ...reservation, status: 'cancelled' }
+              : reservation,
+          ),
+        );
+        toast.success('Reserva cancelada. El objeto vuelve a estar disponible.');
+      })
+      .catch((error) => {
+        setReservations((current) => [...current]);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'No se pudo cancelar la reserva.',
+        );
+      });
   }
 
   function deleteDemoAccount() {
@@ -133,13 +203,19 @@ export function AccountDashboard() {
         <div>
           <PackageOpen aria-hidden="true" />
           <span>
-            <strong>7</strong> préstamos completados
+            <strong>{demoMode ? 7 : completedLoans}</strong> préstamos
+            completados
           </span>
         </div>
         <div>
           <Leaf aria-hidden="true" />
           <span>
-            <strong>28,4 kg</strong> de residuos evitados
+            <strong>
+              {demoMode
+                ? '28,4 kg'
+                : `${wasteAvoidedKg.toLocaleString('es-ES', { maximumFractionDigits: 1 })} kg`}
+            </strong>{' '}
+            de residuos evitados
           </span>
         </div>
         <div>
@@ -200,7 +276,22 @@ export function AccountDashboard() {
               <Link href="/explorar">Buscar otro objeto</Link>
             </Button>
           </div>
-          {optimisticReservations.map((reservation) => (
+          {loadingReservations ? (
+            <div className="empty-state">
+              <PackageOpen aria-hidden="true" />
+              <h2>Cargando tus reservas…</h2>
+            </div>
+          ) : optimisticReservations.length === 0 ? (
+            <div className="empty-state">
+              <PackageOpen aria-hidden="true" />
+              <h2>Aún no tienes reservas</h2>
+              <p>Explora el catálogo y pide tu primer objeto prestado.</p>
+              <Button asChild variant="outline">
+                <Link href="/explorar">Explorar catálogo</Link>
+              </Button>
+            </div>
+          ) : (
+            optimisticReservations.map((reservation) => (
             <article className="reservation-row" key={reservation.id}>
               <div
                 className={`reservation-icon item-media--${reservation.item.category}`}
@@ -246,7 +337,8 @@ export function AccountDashboard() {
                 )}
               </div>
             </article>
-          ))}
+            ))
+          )}
         </section>
       )}
 
