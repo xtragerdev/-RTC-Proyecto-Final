@@ -38,13 +38,21 @@ Recorrido sugerido de unos 5 minutos sobre el despliegue:
 3. **Reserva:** desde la ficha, «Solicitar reserva» registra la solicitud y muestra el
    estado de enviada.
 4. **Roles en `/acceso`:** los botones demostrativos de **Miembro**, **Responsable** y
-   **Admin** permiten revisar cada experiencia sin credenciales. El responsable ve la cola
-   de solicitudes y puede aprobar o rechazar; el admin gestiona la red y los roles.
+   **Admin** permiten revisar cada experiencia sin credenciales. Con las cuentas reales
+   sembradas (abajo), los paneles trabajan contra la API: aprobar, rechazar, entregar,
+   devolver, cambiar el estado del inventario o asignar roles se persiste en Atlas.
 5. **Centros:** mapa interactivo real con Leaflet, sincronizado con el listado.
 6. **API:** documentación interactiva en [Swagger](https://renodo-api.onrender.com/api-docs).
 
-Cuenta real sembrada para probar el login contra la API: `iker-navarro.0002@renodo.example`
-con contraseña `ReNodoDemo2026!`. Todas las cuentas del dataset son sintéticas.
+Cuentas reales sembradas para probar el login contra la API (contraseña común
+`ReNodoDemo2026!`):
+
+| Rol | Email |
+|---|---|
+| Admin | `iker-navarro.0002@renodo.example` |
+| Responsable (Nodo Malasaña) | `elena-ortega.0003@renodo.example` |
+
+Todas las cuentas del dataset son sintéticas.
 
 ## Capturas (despliegue en producción)
 
@@ -396,7 +404,10 @@ En `/acceso` aparecen tres botones:
 - **Responsable:** panel de solicitudes e inventario.
 - **Admin:** panel global y cambio de roles.
 
-Son sesiones locales pensadas para revisar UX y permisos sin depender de servicios externos.
+Son sesiones locales pensadas para revisar UX y permisos sin depender de servicios externos,
+y muestran datos de ejemplo. Con una cuenta real sembrada (ver guía de corrección), los
+paneles de cuenta y de gestión leen y escriben en la API desplegada: las reservas, los
+estados del inventario y los roles se guardan en MongoDB Atlas.
 El botón de registro real utiliza la API y nunca permite elegir un rol superior.
 
 ## API principal

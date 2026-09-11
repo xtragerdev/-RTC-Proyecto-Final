@@ -38,7 +38,7 @@ const assertAdminCanExit = async (user, session) => {
 export const listUsers = async (req, res) => {
   const query = req.validated.query;
   const { page, limit, skip } = getPagination(query);
-  const filter = {};
+  const filter = { deletedAt: null };
   if (query.role) filter.role = query.role;
   if (query.active !== undefined) filter.active = query.active;
   if (query.q) {
